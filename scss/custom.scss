@@ -1,0 +1,114 @@
+/**
+* * Modificando Las variables de Bootstrap 
+**/
+$primary: #EB5757;
+$light: #ffffff;
+$list-group-border-width: 0;
+$list-group-item-padding-y: 4px;
+$list-group-item-padding-x: 4px;
+$offcanvas-vertical-height: 40vh;
+
+$spacer: 1rem;
+$spacers: (
+    0: 0,
+    1: $spacer * .25,
+    2: $spacer * .5,
+    3: $spacer,
+    4: $spacer * 1.5,
+    5: $spacer * 3,
+);
+    
+$custom-spacer : (
+    6: $spacer * 2,
+    7: $spacer * 2.5,
+    8: $spacer * 4,
+    9: $spacer * 6,
+);
+$spacers: map-merge($spacers , $custom-spacer );
+
+/**
+*? Css Normal 
+**/
+
+/**
+*! Stays 
+**/
+
+.card img{
+    border-radius: 1.8rem;
+}
+.card-img-top{
+    object-fit: cover;
+    object-position: 0% 60%;
+}
+
+/**
+*! Navbar Component
+**/
+
+#selectLocation{
+    flex: 0 0 auto;
+    width: auto;
+}
+
+#input , #flotanteNav{
+    flex: 0 0 auto;
+    width: auto;
+}
+
+.input-group {
+    justify-content: flex-end;
+}
+
+.vstack .d-flex button{
+   --bs-btn-padding-y: 0.2rem;
+   --bs-btn-padding-x:0.5rem;
+   --bs-btn-line-height: 1; 
+}
+
+/**
+*! Not Found Page
+**/
+
+h5{
+    font-family: 'Inconsolata', monospace; 
+}
+#Bad-news{
+    font-family: 'Space Mono', monospace;
+    font-weight: 700;
+    font-size: 3.5rem;
+}
+#message{
+    font-family: 'Space Mono', monospace;
+    font-weight: 400;
+    font-size: 1.3rem;
+}
+#button{
+    font-family: 'Space Mono', monospace;
+    font-weight: 700;
+    font-size: 0.9rem;
+}
+
+@import '../node_modules/bootstrap//scss/bootstrap.scss';
+
+
+@media only screen and (max-width: 767px){
+    .container-fluid{
+        flex-direction: column;
+    }
+    #formNav{
+        flex-direction: column;
+    }
+    #input {
+        flex: 0 0 60%;
+    }
+}
+.list-group-item-action{
+    width: 80%;
+}
+
+#btn-dark-card{
+    --bs-btn-padding-y: .25rem;             
+    --bs-btn-padding-x: .5rem;
+    --bs-btn-font-size: .55rem;
+}
