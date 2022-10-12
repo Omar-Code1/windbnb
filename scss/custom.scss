@@ -93,15 +93,16 @@ h5{
 
 
 @media only screen and (max-width: 767px){
+    #input , #flotanteNav{
+        width: 100%;
+    }
     .container-fluid{
         flex-direction: column;
     }
     #formNav{
         flex-direction: column;
     }
-    #input {
-        flex: 0 0 60%;
-    }
+    
 }
 .list-group-item-action{
     width: 80%;

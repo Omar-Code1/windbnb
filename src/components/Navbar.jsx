@@ -1,121 +1,40 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import svgLogo from '../img/logo.svg';
 import svgSearch from '../img/search.svg';
 import jsonStays from '../JSON/stays.json';
 import svgLocation from '../img/location.svg';
 import { StaysContext } from '../context/StaysProvider';
+import { useCounter } from '../hooks/useCounter';
+import { useForm } from '../hooks/useForm';
+
+const initialState = {
+  formLocation: '',
+  formGuests: '',
+};
+
+const locationStays = jsonStays.map((item) => item.city);
+
+const filterLocation = locationStays.filter((item, index) => {
+  return locationStays.indexOf(item) === index;
+});
 
 const Navbar = () => {
-  const initialState = {
-    formLocation: '',
-    formGuests: '',
-  };
-  const { setStays } = useContext(StaysContext);
-  useEffect(() => setStays(jsonStays), []);
-  const [formSearch, setFormSearch] = useState(initialState);
-  const [counterAdults, setCounterAdults] = useState(0);
-  const [counterChildrens, setCounterChildrens] = useState(0);
+  const { addStays } = useContext(StaysContext);
 
-  const locationStays = jsonStays.map((item) => item.city);
+  useEffect(() => addStays(jsonStays), []);
 
-  const filterLocation = locationStays.filter((item, index) => {
-    return locationStays.indexOf(item) === index;
-  });
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  const { handleSubmit, handleChange, handleClickLocation, form, addForm } =
+    useForm(initialState);
 
-    const { formLocation, formGuests } = formSearch;
-    if (formLocation === '' || formGuests === '') {
-      console.log('no deje espacios vacios');
-      return;
-    }
-    setStays(
-      jsonStays.filter(
-        (item) => item.city === formLocation && item.maxGuests > formGuests
-      )
-    );
-  };
-  const handleChange = (e) => {
-    const { value, name } = e.target;
-    setFormSearch(() => ({
-      ...formSearch,
-      [name]: value,
-    }));
-  };
-  const handleClickLocation = (e) => {
-    setFormSearch(() => ({
-      ...formSearch,
-      formLocation: e.target.innerText,
-    }));
-  };
-  const handleCounterAdults = (e, counter) => {
-    setCounterAdults((state) => {
-      if (e.target.innerText === '+') {
-        setFormSearch(() => ({
-          ...formSearch,
-          formGuests: state + counter,
-        }));
-        return (state = counterAdults + 1);
-      } else if (e.target.innerText === '-') {
-        if (state > 1) {
-          setFormSearch(() => ({
-            ...formSearch,
-            formGuests: state + counter,
-          }));
-          return (state = counterAdults - 1);
-        } else if (state === 1) {
-          setFormSearch(() => ({
-            ...formSearch,
-            formGuests: counter > 0 ? counter : '',
-          }));
-          return (state = counterAdults - 1);
-        } else {
-          setFormSearch(() => ({
-            ...formSearch,
-            formGuests: counter > 0 ? counter : '',
-          }));
-          return state;
-        }
-      }
-    });
-  };
-  const handleCounterChildrens = (e, counter) => {
-    setCounterChildrens((state) => {
-      if (e.target.innerText === '+') {
-        setFormSearch(() => ({
-          ...formSearch,
-          formGuests: state + counter,
-        }));
-        return (state = counterChildrens + 1);
-      } else if (e.target.innerText === '-') {
-        if (state > 1) {
-          setFormSearch(() => ({
-            ...formSearch,
-            formGuests: state + counter,
-          }));
-          return (state = counterChildrens - 1);
-        } else if (state === 1) {
-          setFormSearch(() => ({
-            ...formSearch,
-            formGuests: counter > 0 ? counter : '',
-          }));
-          return (state = counterChildrens - 1);
-        } else {
-          setFormSearch(() => ({
-            ...formSearch,
-            formGuests: counter > 0 ? counter : '',
-          }));
-          return state;
-        }
-      }
-    });
-  };
+  const adults = useCounter();
+  const children = useCounter();
+
   const handleReiniciar = () => {
-    setCounterAdults(0);
-    setCounterChildrens(0);
-    setFormSearch(initialState);
-    setStays(jsonStays);
+    adults.handleReiniciarCounter();
+    children.handleReiniciarCounter();
+    addForm(initialState);
+    addStays(jsonStays);
   };
   return (
     <>
@@ -124,7 +43,13 @@ const Navbar = () => {
           <Link to="/" className="navbar-brand" onClick={handleReiniciar}>
             <img src={svgLogo} alt="logo" />
           </Link>
-          <form className="input-group" id="formNav">
+          <form
+            className="input-group"
+            id="formNav"
+            onSubmit={(e) => {
+              handleSubmit(e, addStays, jsonStays);
+            }}
+          >
             <button
               className="btn btn-outline-primary"
               type="button"
@@ -132,11 +57,7 @@ const Navbar = () => {
               data-bs-target="#offcanvasWithBothOptions"
               aria-controls="offcanvasWithBothOptions"
             >
-              {`${
-                formSearch.formLocation !== ''
-                  ? formSearch.formLocation
-                  : 'Location'
-              }`}
+              {`${form.formLocation !== '' ? form.formLocation : 'Location'}`}
             </button>
             <div className="form-floating" id="flotanteNav">
               <input
@@ -145,18 +66,17 @@ const Navbar = () => {
                 placeholder="Add guests"
                 readOnly
                 id="input"
-                value={
-                  formSearch.formGuests !== '' ? formSearch.formGuests : ''
-                }
+                name="formGuests"
+                value={form.formGuests}
                 data-bs-toggle="offcanvas"
                 data-bs-target="#offcanvasWithBothOptions"
                 aria-controls="offcanvasWithBothOptions"
               />
               <label htmlFor="input" className="text-muted">{`${
-                formSearch.formGuests ? 'Guests' : 'Add Guests'
+                form.formGuests ? 'Guests' : 'Add Guests'
               }`}</label>
             </div>
-            <button className="btn btn-outline-primary" type="button">
+            <button className="btn btn-outline-primary" type="submit">
               <img src={svgSearch} alt="search" className="align-middle" />
             </button>
           </form>
@@ -170,7 +90,12 @@ const Navbar = () => {
         aria-labelledby="offcanvasWithBothOptionsLabel"
       >
         <div className="offcanvas-header">
-          <form className="input-group" onSubmit={handleSubmit}>
+          <form
+            className="input-group"
+            onSubmit={(e) => {
+              handleSubmit(e, addStays, jsonStays);
+            }}
+          >
             <div className="form-floating">
               <input
                 type="text"
@@ -180,7 +105,7 @@ const Navbar = () => {
                 readOnly
                 onChange={handleChange}
                 id="inputLocation"
-                value={formSearch.formLocation}
+                value={form.formLocation}
               />
               <label htmlFor="inputLocation" className="text-muted">
                 Location
@@ -195,7 +120,7 @@ const Navbar = () => {
                 id="inputGuests"
                 className="form-control"
                 placeholder="Add guests"
-                value={formSearch.formGuests}
+                value={form.formGuests}
               />
               <label htmlFor="inputGuests" className="text-muted">
                 Guests
@@ -238,16 +163,16 @@ const Navbar = () => {
                   <button
                     className="btn btn-outline-dark"
                     onClick={(e) => {
-                      handleCounterAdults(e, counterChildrens);
+                      adults.handleCounter(e, children.counter, addForm, form);
                     }}
                   >
                     -
                   </button>
-                  <p className="m-0 align-bottom mx-3">{counterAdults}</p>
+                  <p className="m-0 align-bottom mx-3">{adults.counter}</p>
                   <button
                     className="btn btn-outline-dark"
                     onClick={(e) => {
-                      handleCounterAdults(e, counterChildrens);
+                      adults.handleCounter(e, children.counter, addForm, form);
                     }}
                   >
                     +
@@ -261,16 +186,16 @@ const Navbar = () => {
                   <button
                     className="btn btn-outline-dark"
                     onClick={(e) => {
-                      handleCounterChildrens(e, counterAdults);
+                      children.handleCounter(e, adults.counter, addForm, form);
                     }}
                   >
                     -
                   </button>
-                  <p className="m-0 align-bottom mx-3">{counterChildrens}</p>
+                  <p className="m-0 align-bottom mx-3">{children.counter}</p>
                   <button
                     className="btn btn-outline-dark"
                     onClick={(e) => {
-                      handleCounterChildrens(e, counterAdults);
+                      children.handleCounter(e, adults.counter, addForm, form);
                     }}
                   >
                     +

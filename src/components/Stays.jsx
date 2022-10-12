@@ -4,7 +4,7 @@ const Stays = ({ stay }) => {
   const { photo, title, rating, type, superHost, beds } = stay;
   return (
     <div className="col-12 col-lg-6 col-xl-4">
-      <div className="card border-light m-2">
+      <div className="card border-light m-1">
         <img src={photo} className="card-img-top" height="260rem" alt={title} />
         <div className="card-body py-4 px-2">
           <div className="d-flex justify-content-between mb-2">
