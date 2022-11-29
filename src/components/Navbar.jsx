@@ -24,7 +24,7 @@ const Navbar = () => {
 
   useEffect(() => addStays(jsonStays), []);
 
-  const { handleSubmit, handleChange, handleClickLocation, form, addForm } =
+  const { handleChange, handleClickLocation, form, addForm } =
     useForm(initialState);
 
   const adults = useCounter();
@@ -35,6 +35,21 @@ const Navbar = () => {
     children.handleReiniciarCounter();
     addForm(initialState);
     addStays(jsonStays);
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    if (form.formLocation === '' || form.formGuests === '') {
+      console.log('no deje espacios vacios');
+      return;
+    }
+    addStays(
+      jsonStays.filter(
+        (item) =>
+          item.city === form.formLocation && item.maxGuests > form.formGuests,
+      ),
+    );
   };
   return (
     <>
@@ -90,12 +105,7 @@ const Navbar = () => {
         aria-labelledby="offcanvasWithBothOptionsLabel"
       >
         <div className="offcanvas-header">
-          <form
-            className="input-group"
-            onSubmit={(e) => {
-              handleSubmit(e, addStays, jsonStays);
-            }}
-          >
+          <form className="input-group" onSubmit={handleSubmit}>
             <div className="form-floating">
               <input
                 type="text"
