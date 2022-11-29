@@ -47,7 +47,7 @@ const Navbar = () => {
     addStays(
       jsonStays.filter(
         (item) =>
-          item.city === form.formLocation && item.maxGuests > form.formGuests,
+          item.city === form.formLocation && item.maxGuests >= form.formGuests,
       ),
     );
   };
